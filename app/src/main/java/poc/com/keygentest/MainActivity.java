@@ -16,26 +16,36 @@ public class MainActivity extends AppCompatActivity {
     private PrivateKey privateKey;
     private PublicKey publicKey;
 
+    /* We need to use digital signatures. They provide:
+    * Integrity
+    * Authentication
+    * Non-repudiation
+    */
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            // Generate PrivatePublic Keypair
+            // Generate PrivatePublic Keypair with KeypairGenerator
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             pair = keyPairGenerator.generateKeyPair();
             privateKey = pair.getPrivate();
             publicKey = pair.getPublic();
 
-            // Sign digital signature
+            // Signing of digital signature
             Signature signature = Signature.getInstance("SHA256withRSA");
             signature.initSign(privateKey);
+
             byte[] secret = "abcdefghijklmnopqrstuvxyz".getBytes("UTF-8");
+            // This can also become a hash of something a TruYou user uses upon logging in. Maybe a hash of the public key?
+
             signature.update(secret);
             byte[] digitalSignature = signature.sign();
 
-            // Nu een manier zoeken om die digitalsignature op te slaan, samen met de public key.
-            // zodat die op de serverkant geverified kan worden, op een soortgelijke manier als onderstaand.
+            // Need to find a way to save the digital signature, together with the public key.
+            // Then get it to the server, so the digital signature can be verified on the node js server, in a similar way as below.
+            // (Tl:dr, need to verify the SHA256withRSA signature with the public key on the node server)
 
             // Verify Digital Signature.
             Signature signatureV = Signature.getInstance("SHA256withRSA");
